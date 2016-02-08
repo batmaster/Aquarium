@@ -32,12 +32,13 @@ public class Request {
 		
 	}
 	
+	public static String checkUsername(Context context, String username, String password) throws IOException {
+		return request(String.format("SELECT * FROM users WHERE username = '%s' AND password = '%s'", username, password));
+	}
+	
 	public static String getDevices(Context context) throws IOException {
 		String username = SharedValues.getStringPref(context, SharedValues.KEY_USERNAME);
-//		return request(String.format("SELECT p.* FROM ping p, registers r WHERE r.username = '%s' AND p.bid = r.bid", username));
-		String res = request(String.format("SELECT p.* FROM ping p, registers r WHERE r.username = '%s' AND p.bid = r.bid", username));
-		System.out.println();
-		return res;
+		return request(String.format("SELECT p.* FROM ping p, registers r WHERE r.username = '%s' AND p.bid = r.bid", username));
 	}
 	
 	private static String request(String str) throws IOException {
