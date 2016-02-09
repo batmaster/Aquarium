@@ -26,6 +26,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+/**
+ * หน้า activity แสดงหน้าแรกเลย
+ *
+ */
 public class MainActivity extends Activity {
 	
 	private EditText editTextUsername;
@@ -67,6 +71,7 @@ public class MainActivity extends Activity {
 		});
 	}
 	
+	// คลาสสำหรับ ตรวจสอบ username
 	private class CheckUsernameTask extends AsyncTask<Void, Void, Integer> {
 
 		private Context context;

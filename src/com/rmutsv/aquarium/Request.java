@@ -26,6 +26,9 @@ import org.apache.http.params.HttpParams;
 
 import android.content.Context;
 
+/**
+ * เอาไว้เรียกข้อมูลจาก server ตอนนี้ยังไม่ได้ใช้
+ */
 public class Request {
 	
 	private Request() {

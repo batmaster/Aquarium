@@ -18,8 +18,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+/**
+ * หน้า activity แสดงปุ่มควบคุมบอร์ด
+ *
+ */
 public class ConsoleActivity extends Activity {
 
+	// ประกาศตัวแปรสำหรับปุ่มสวิตซ์ทุกอัน
 	private TextView textViewBid;
 	private TextView textViewTemp;
 	private Switch switchRelayHeater;
@@ -29,6 +34,7 @@ public class ConsoleActivity extends Activity {
 	private Button buttonFeed;
 	private Button buttonRefresh;
 	
+	// ประกาศตัวแปรที่จำเป็นต้องใช้
 	private OnCheckedChangeListener listener;
 	private boolean busy = true;
 
@@ -37,6 +43,7 @@ public class ConsoleActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_console);
 		
+		// เชื่อมตัวแปรกับชิ้นส่วนในหน้า xml
 		textViewBid = (TextView) findViewById(R.id.textViewBid);
 		
 		textViewTemp = (TextView) findViewById(R.id.textViewTemp);
@@ -45,6 +52,10 @@ public class ConsoleActivity extends Activity {
 
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				// พวกฟังก์ชั่นที่เรียกใช้เวลากดสวิตซ์ จะเป็นแนวนี้หมดคือ
+				// ตัวแปร busy เช็คว่าหลังจากส่งคำสั่งไปครั้งก่อนหน้า ได้รับผลลัพธ์มาแล้วหรือยัง
+				// ถ้ายัง ให้แสดงขึ้นว่า "กรุณารอประมวลผล"
+				// # เขียนอธิบายแค่ครั้งเดียวนะสำหรับ activity นี้
 				if (!busy) {
 					CommandTask task = new CommandTask(getApplicationContext());
 					task.execute();
@@ -86,12 +97,14 @@ public class ConsoleActivity extends Activity {
 			}
 		});
 		
+		// อันนี้คือฟื้นฟูปุ่มสวิตซ์ให้ตรงกับผลลัพธ์ที่ได้จากบอร์ด #getIntent().getXXXExtra() คือรับต่าที่ส่งมาจาก activity ก่อนหน้า
 		String A = getIntent().getStringExtra("A");
 		textViewBid.setText(A.substring(4, A.indexOf("-")));
 		refresh(A);
 	}
 	
 	private void refresh(String A) {
+		// เช็คค่า 4 หลักที่ได้จากเรียก relay=A ไปที่บอร์ด
 		boolean heaterAuto = A.charAt(0) == '1';
 		boolean filterAuto = A.charAt(1) == '1';
 		boolean relay1 = A.charAt(2) == '0';
@@ -102,11 +115,12 @@ public class ConsoleActivity extends Activity {
 		switchRelayFilter.setOnCheckedChangeListener(null);
 		toggleRelayFilter.setOnCheckedChangeListener(null);
 
+		//ตั้งค่าปุ่มสวิตซ์ที่ 4 ให้สอดคล้องกัน
 		switchRelayHeater.setChecked(heaterAuto);
 		switchRelayFilter.setChecked(filterAuto);
 		toggleRelayHeater.setChecked(relay1);
 		toggleRelayFilter.setChecked(relay2);
-
+		
 		toggleRelayHeater.setEnabled(!heaterAuto);
 		toggleRelayFilter.setEnabled(!filterAuto);
 		
@@ -115,6 +129,7 @@ public class ConsoleActivity extends Activity {
 		switchRelayFilter.setOnCheckedChangeListener(listener);
 		toggleRelayFilter.setOnCheckedChangeListener(listener);
 		
+		// แสดงเลขอุณหภูมิ
 		String temp = A.substring(A.indexOf("-") + 1);
 		textViewTemp.setText(temp);
 	}
@@ -131,7 +146,8 @@ public class ConsoleActivity extends Activity {
 		busy = false;
 		super.onResume();
 	}
-
+	
+	// คลาสสำหรับ แค่ตรวจสอบสถานะล่าสุดในบอร์ด
 	private class CheckStatusTask extends AsyncTask<Void, Void, String> {
 
 		private Context context;
@@ -171,7 +187,8 @@ public class ConsoleActivity extends Activity {
 			busy = false;
 		}
 	}
-
+	
+	// คลาสสำหรับ ส่งคำสั่ง และตรวจสอบสถานะหลังจากนั้น ในบอร์ด
 	private class CommandTask extends AsyncTask<Void, Void, String> {
 
 		private Context context;

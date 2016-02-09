@@ -24,11 +24,16 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
+/**
+ * เอาไว้คุยกับบอร์ด
+ *
+ */
 public class Service {
 	
 	public static final int SOCKET_TIMEOUT_TRYING = 5;
 	public static final int TIMEOUT = 10000;
 	
+	// เรียกเพื่อส่งข้อมูลไปยังบอร์ด
 	public static String sendHttpRequest(final Context context, final String parameter, int socketTimeoutTrying) {
 		Log.d("Try", socketTimeoutTrying + "");
 		String serverResponse = "ERR";
@@ -75,6 +80,7 @@ public class Service {
 		}
 		
 		Log.d("http", "Response: " + serverResponse);
+		// ตอบกลับผลลัพธ์ไปยังที่ที่เรียก
 		return serverResponse;
 	}
 }

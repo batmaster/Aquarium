@@ -3,6 +3,10 @@ package com.rmutsv.aquarium;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
+/**
+ * โทเดลของข้อมูลที่รับจาก server มาแสดงเป็น listview
+ *
+ */
 public class DeviceListViewRowItem {
 	
 	private String bid;

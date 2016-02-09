@@ -29,6 +29,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * หน้า activity แสดงหน้า select device
+ *
+ */
 public class SelectDeviceActivity extends Activity {
 	
 	private Button buttonAdd;

@@ -19,6 +19,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * เอาไว้ปลับค่าที่ได้จาก server มาแสดงเป็น listview ในหน้า SelectDevice activity
+ *
+ */
 public class DeviceListViewRowAdapter extends ArrayAdapter<DeviceListViewRowItem> {
 	
 	private Context context;
@@ -68,6 +72,7 @@ public class DeviceListViewRowAdapter extends ArrayAdapter<DeviceListViewRowItem
 		return row;
 	}
 	
+	// ฟังก์ชั่นหรับค่าเวลาที่บันทึกไว้ เทียบว่าจากปัจจุบัน ผ่านไปแล้วนานเท่าไหร่
 	private String getDateDiff(Date before, Date after) {
 	    long diffInMillies = after.getTime() - before.getTime();
 	    Log.d("diff", after + "");

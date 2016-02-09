@@ -18,6 +18,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * หน้า activity แสดงในส่วน direct mode
+ *
+ */
 public class DirectModeActivity extends Activity {
 	
 	private EditText editTextIp;
@@ -53,6 +57,7 @@ public class DirectModeActivity extends Activity {
 		});
 	}
 	
+	// คลาสสำหรับ แค่ตรวจสอบสถานะล่าสุดในบอร์ด
 	private class TryToConnectTask extends AsyncTask<Void, Void, String> {
 		
 		private Context context;
