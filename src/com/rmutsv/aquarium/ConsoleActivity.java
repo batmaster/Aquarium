@@ -1,6 +1,10 @@
 package com.rmutsv.aquarium;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,67 +13,248 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 public class ConsoleActivity extends Activity {
-	
+
 	private TextView textViewBid;
+	private TextView textViewTemp;
+	private Switch switchRelayHeater;
 	private ToggleButton toggleRelayHeater;
+	private Switch switchRelayFilter;
 	private ToggleButton toggleRelayFilter;
 	private Button buttonFeed;
 	private Button buttonRefresh;
+	
+	private OnCheckedChangeListener listener;
+	private boolean busy = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_console);
 		
-		String bid = getIntent().getStringExtra(SharedValues.KEY_BID);
-		
 		textViewBid = (TextView) findViewById(R.id.textViewBid);
-		textViewBid.setText(bid);
 		
+		textViewTemp = (TextView) findViewById(R.id.textViewTemp);
+
+		listener = new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if (!busy) {
+					CommandTask task = new CommandTask(getApplicationContext());
+					task.execute();
+				}
+				else {
+					Toast.makeText(getApplicationContext(), "กรุณารอประมวลผล", Toast.LENGTH_SHORT).show();
+				}
+			}
+		};
+
+		switchRelayHeater = (Switch) findViewById(R.id.switchRelayHeater);
 		toggleRelayHeater = (ToggleButton) findViewById(R.id.toggleRelayHeater);
-		toggleRelayHeater.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-		
+
+		switchRelayFilter = (Switch) findViewById(R.id.switchRelayFilter);
 		toggleRelayFilter = (ToggleButton) findViewById(R.id.toggleRelayFilter);
-		toggleRelayFilter.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-		
+
 		buttonFeed = (Button) findViewById(R.id.buttonFeed);
 		buttonFeed.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				
+				FeedTask task = new FeedTask(getApplicationContext());
+				task.execute();
 			}
 		});
-		
+
 		buttonRefresh = (Button) findViewById(R.id.buttonRefresh);
 		buttonRefresh.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				
+				if (!busy) {
+					CheckStatusTask task = new CheckStatusTask(getApplicationContext());
+					task.execute();
+				}
+				else {
+					Toast.makeText(getApplicationContext(), "กรุณารอประมวลผล", Toast.LENGTH_SHORT).show();
+				}
 			}
 		});
 		
+		String A = getIntent().getStringExtra("A");
+		textViewBid.setText(A.substring(4, A.indexOf("-")));
+		refresh(A);
 	}
 	
+	private void refresh(String A) {
+		boolean heaterAuto = A.charAt(0) == '1';
+		boolean filterAuto = A.charAt(1) == '1';
+		boolean relay1 = A.charAt(2) == '0';
+		boolean relay2 = A.charAt(3) == '0';
+		
+		switchRelayHeater.setOnCheckedChangeListener(null);
+		toggleRelayHeater.setOnCheckedChangeListener(null);
+		switchRelayFilter.setOnCheckedChangeListener(null);
+		toggleRelayFilter.setOnCheckedChangeListener(null);
+
+		switchRelayHeater.setChecked(heaterAuto);
+		switchRelayFilter.setChecked(filterAuto);
+		toggleRelayHeater.setChecked(relay1);
+		toggleRelayFilter.setChecked(relay2);
+
+		toggleRelayHeater.setEnabled(!heaterAuto);
+		toggleRelayFilter.setEnabled(!filterAuto);
+		
+		switchRelayHeater.setOnCheckedChangeListener(listener);
+		toggleRelayHeater.setOnCheckedChangeListener(listener);
+		switchRelayFilter.setOnCheckedChangeListener(listener);
+		toggleRelayFilter.setOnCheckedChangeListener(listener);
+		
+		String temp = A.substring(A.indexOf("-") + 1);
+		textViewTemp.setText(temp);
+	}
+
+	@Override
+	protected void onResume() {
+		if (!busy) {
+			CheckStatusTask task = new CheckStatusTask(getApplicationContext());
+			task.execute();
+		}
+		else {
+			Toast.makeText(getApplicationContext(), "กรุณารอประมวลผล", Toast.LENGTH_SHORT).show();
+		}
+		busy = false;
+		super.onResume();
+	}
+
+	private class CheckStatusTask extends AsyncTask<Void, Void, String> {
+
+		private Context context;
+		private ProgressDialog loading;
+
+		public CheckStatusTask(Context context) {
+			this.context = context;
+
+			loading = new ProgressDialog(ConsoleActivity.this);
+			loading.setTitle("ตรวจสอบสถานะ");
+			loading.setMessage("กำลังโหลด...");
+			// loading.setCancelable(false);
+			loading.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		}
+
+		@Override
+		protected String doInBackground(Void... params) {
+			return Service.sendHttpRequest(context, "A", Service.SOCKET_TIMEOUT_TRYING);
+		}
+
+		@Override
+		protected void onPreExecute() {
+			loading.show();
+			super.onPreExecute();
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			loading.dismiss();
+
+			if (result.length() > 4) {
+				refresh(result);
+			} else {
+				Toast.makeText(context, "เกิดข้อผิดพลาด", Toast.LENGTH_SHORT).show();
+			}
+			
+			busy = false;
+		}
+	}
+
+	private class CommandTask extends AsyncTask<Void, Void, String> {
+
+		private Context context;
+		private ProgressDialog loading;
+
+		public CommandTask(Context context) {
+			this.context = context;
+
+			loading = new ProgressDialog(ConsoleActivity.this);
+			loading.setTitle("ส่งคำสั่ง");
+			loading.setMessage("กำลังโหลด...");
+			// loading.setCancelable(false);
+			loading.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		}
+
+		@Override
+		protected String doInBackground(Void... params) {
+			String heaterAuto = switchRelayHeater.isChecked() ? "1" : "0";
+			String filterAuto = switchRelayFilter.isChecked() ? "1" : "0";
+			String relay1 = !toggleRelayHeater.isChecked() ? "1" : "0";
+			String relay2 = !toggleRelayFilter.isChecked() ? "1" : "0";
+			
+			return Service.sendHttpRequest(context, "B" + heaterAuto + filterAuto + relay1 + relay2, Service.SOCKET_TIMEOUT_TRYING);
+		}
+
+		@Override
+		protected void onPreExecute() {
+			loading.show();
+			super.onPreExecute();
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			loading.dismiss();
+
+			if (result.length() > 4) {
+				refresh(result);
+			} else {
+				Toast.makeText(context, "เกิดข้อผิดพลาด", Toast.LENGTH_SHORT).show();
+			}
+			
+			busy = false;
+		}
+	}
+	
+	private class FeedTask extends AsyncTask<Void, Void, String> {
+
+		private Context context;
+		private ProgressDialog loading;
+
+		public FeedTask(Context context) {
+			this.context = context;
+
+			loading = new ProgressDialog(ConsoleActivity.this);
+			loading.setTitle("ส่งคำสั่ง");
+			loading.setMessage("กำลังโหลด...");
+			// loading.setCancelable(false);
+			loading.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		}
+
+		@Override
+		protected String doInBackground(Void... params) {
+			return Service.sendHttpRequest(context, "C", Service.SOCKET_TIMEOUT_TRYING);
+		}
+
+		@Override
+		protected void onPreExecute() {
+			loading.show();
+			super.onPreExecute();
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			loading.dismiss();
+
+			if (Integer.parseInt(result) > 0) {
+				Toast.makeText(context, "ให้อาหารเรียบร้อย", Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(context, "เกิดข้อผิดพลาด", Toast.LENGTH_SHORT).show();
+			}
+			
+			busy = false;
+		}
+	}
+
 }

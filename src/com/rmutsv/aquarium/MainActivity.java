@@ -39,6 +39,10 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		
 		editTextUsername = (EditText) findViewById(R.id.editTextUsername);
+		String username = SharedValues.getStringPref(getApplicationContext(), SharedValues.KEY_USERNAME);
+		if (username != null)
+			editTextUsername.setText(username);
+		
 		editTextPassword = (EditText) findViewById(R.id.editTextPassword);
 		
 		buttonLogin = (Button) findViewById(R.id.buttonLogin);
@@ -112,6 +116,7 @@ public class MainActivity extends Activity {
 		@Override
 		protected void onPostExecute(Integer length) {
 			loading.dismiss();
+			
 			if (length > 0) {
 				SharedValues.setStringPref(context, SharedValues.KEY_USERNAME, editTextUsername.getText().toString());
 				Intent intent = new Intent(getApplicationContext(), SelectDeviceActivity.class);

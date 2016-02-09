@@ -32,6 +32,9 @@ public class SharedValues {
 	public static final String KEY_USERNAME = "KEY_USERNAME";
 	public static final String KEY_BID = "KEY_BID";
 	
+	public static final String KEY_IP = "KEY_IP";
+	public static final String KEY_PORT = "KEY_PORT";
+	
 	private SharedValues () {
 		
 	}
