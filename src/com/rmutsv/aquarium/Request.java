@@ -39,6 +39,16 @@ public class Request {
 		return request(String.format("SELECT * FROM users WHERE username = '%s' AND password = '%s'", username, password));
 	}
 	
+	public static void addDevice(Context context, String bid) throws IOException {
+		String username = SharedValues.getStringPref(context, SharedValues.KEY_USERNAME);
+		request(String.format("INSERT INTO registers (bid, username) VALUES ('%s', '%s')", bid, username));
+	}
+	
+	public static void removeDevice(Context context, String bid) throws IOException {
+		String username = SharedValues.getStringPref(context, SharedValues.KEY_USERNAME);
+		request(String.format("REMOVE FROM register WHERE bid = '%s' AND username = '%s'", bid, username));
+	}
+	
 	public static String getDevices(Context context) throws IOException {
 		String username = SharedValues.getStringPref(context, SharedValues.KEY_USERNAME);
 		return request(String.format("SELECT p.* FROM ping p, registers r WHERE r.username = '%s' AND p.bid = r.bid", username));
@@ -69,7 +79,7 @@ public class Request {
 	
 				BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 				while ((line = reader.readLine()) != null) {
-					sb.append(line + "!!!");
+					sb.append(line);
 				}
 				reader.close();
 	

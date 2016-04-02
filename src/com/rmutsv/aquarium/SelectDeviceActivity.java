@@ -12,6 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -48,7 +49,32 @@ public class SelectDeviceActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(getApplicationContext(), "ยังเพิ่มอุปกรณ์ไม่ได้", Toast.LENGTH_SHORT).show();
+				final Dialog dialog = new Dialog(SelectDeviceActivity.this);
+				dialog.setContentView(R.layout.popup_add_device);
+				dialog.setTitle("เพิ่มอุปกรณ์");
+				
+				final EditText editTextBid = (EditText) dialog.findViewById(R.id.editTextBid);
+				
+				Button buttonCancel = (Button) dialog.findViewById(R.id.buttonCancel);
+				buttonCancel.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View arg0) {
+						dialog.dismiss();
+					}
+				});
+				
+				Button buttonAdd = (Button) dialog.findViewById(R.id.buttonAdd);
+				buttonAdd.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						AddDevicesTask task = new AddDevicesTask(getApplicationContext(), dialog, editTextBid.getText().toString());
+						task.execute();
+					}
+				});
+				
+				dialog.show();
 			}
 		});
 		
@@ -70,8 +96,7 @@ public class SelectDeviceActivity extends Activity {
 
 	@Override
 	protected void onResume() {
-		GetDevicesTask task = new GetDevicesTask(getApplicationContext());
-		task.execute();
+		refreshListView();
 		
 		super.onResume();
 	}
@@ -87,7 +112,7 @@ public class SelectDeviceActivity extends Activity {
 			this.context = context;
 			
 			loading = new ProgressDialog(SelectDeviceActivity.this);
-			loading.setTitle("รายการแจ้งเตือน");
+			loading.setTitle("รายการอุปกรณ์");
 			loading.setMessage("กำลังโหลด...");
 //			loading.setCancelable(false);
 			loading.setProgressStyle(ProgressDialog.STYLE_SPINNER); 
@@ -98,7 +123,7 @@ public class SelectDeviceActivity extends Activity {
 			list = new ArrayList<DeviceListViewRowItem>();
 			
 			try {
-				String parsed = Request.getDevices(getApplicationContext());
+				String parsed = Request.getDevices(context);
 				JSONArray js = new JSONArray(parsed);
 				for (int i = 0; i < js.length(); i++) {
 					JSONObject jo = js.getJSONObject(i);
@@ -134,8 +159,69 @@ public class SelectDeviceActivity extends Activity {
 			loading.dismiss();
 			
 			listView.setAdapter(null);
-			DeviceListViewRowAdapter adapter = new DeviceListViewRowAdapter(context, list);
+			DeviceListViewRowAdapter adapter = new DeviceListViewRowAdapter(context, SelectDeviceActivity.this, list);
 			listView.setAdapter(adapter);
+		}
+	}
+	
+	public void refreshListView() {
+		GetDevicesTask task = new GetDevicesTask(getApplicationContext());
+		task.execute();
+	}
+	
+	private class AddDevicesTask extends AsyncTask<Void, Void, Void> {
+
+		private Context context;
+		private String bid;
+		
+		private ProgressDialog loading;
+		private Dialog outerDialog;
+		
+		public AddDevicesTask(Context context, Dialog outerDialog, String bid) {
+			this.context = context;
+			this.outerDialog = outerDialog;
+			this.bid = bid;
+			
+			loading = new ProgressDialog(SelectDeviceActivity.this);
+			loading.setTitle("เพิ่มอุปกรณ์");
+			loading.setMessage("กำลังโหลด...");
+//			loading.setCancelable(false);
+			loading.setProgressStyle(ProgressDialog.STYLE_SPINNER); 
+		}
+		
+		@Override
+		protected Void doInBackground(Void[] params) {
+			try {
+				Request.addDevice(context, bid);
+			} catch (ConnectTimeoutException e) {
+				loading.setMessage("เชื่อมต่อเซิร์ฟนานเกินไป");
+			} catch (SocketTimeoutException e) {
+				loading.setMessage("รอผลตอบกลับนานเกินไป");
+			} catch (HttpHostConnectException e) {
+				loading.setMessage("เชื่อมต่อเซิร์ฟเวอร์ไม่ได้");
+				e.printStackTrace();
+			} catch (IOException e) {
+				loading.setMessage("มีปัญหาการเชื่อมต่อ");
+				e.printStackTrace();
+			}
+			
+			return null;
+		}
+		
+		@Override
+		protected void onPreExecute() {
+			loading.show();
+			super.onPreExecute();
+		}
+
+		@Override
+		protected void onPostExecute(Void message) {
+			loading.dismiss();
+			
+			refreshListView();
+			
+			
+			outerDialog.dismiss();
 		}
 	}
 	

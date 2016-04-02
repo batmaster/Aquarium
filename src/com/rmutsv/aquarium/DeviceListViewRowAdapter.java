@@ -1,14 +1,23 @@
 package com.rmutsv.aquarium;
 
+import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.conn.HttpHostConnectException;
+
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,11 +35,13 @@ import android.widget.Toast;
 public class DeviceListViewRowAdapter extends ArrayAdapter<DeviceListViewRowItem> {
 	
 	private Context context;
+	private SelectDeviceActivity selectDeviceActivity;
 	private List<DeviceListViewRowItem> list;
 
-	public DeviceListViewRowAdapter(Context context, List<DeviceListViewRowItem> list) {
+	public DeviceListViewRowAdapter(Context context, SelectDeviceActivity selectDeviceActivity, List<DeviceListViewRowItem> list) {
 		super(context, R.layout.listview_row_device, list);
 		this.context = context;
+		this.selectDeviceActivity = selectDeviceActivity;
 		this.list = list;
 	}
 
@@ -65,11 +76,55 @@ public class DeviceListViewRowAdapter extends ArrayAdapter<DeviceListViewRowItem
 			
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(getContext(), list.get(position).getBid() + " ยังลบไม่ได้", Toast.LENGTH_SHORT).show();
+				RemoveDevicesTask task = new RemoveDevicesTask(context, list.get(position).getBid());
+				task.execute();
 			}
 		});
 		
 		return row;
+	}
+	
+	private class RemoveDevicesTask extends AsyncTask<Void, Void, Void> {
+
+		private Context context;
+		private String bid;
+		
+		
+		public RemoveDevicesTask(Context context, String bid) {
+			this.bid = bid;
+		}
+		
+		@Override
+		protected Void doInBackground(Void[] params) {
+			list = new ArrayList<DeviceListViewRowItem>();
+			
+			try {
+				Request.removeDevice(context, bid);
+			} catch (ConnectTimeoutException e) {
+				Toast.makeText(context, "เชื่อมต่อเซิร์ฟนานเกินไป", Toast.LENGTH_SHORT).show();
+			} catch (SocketTimeoutException e) {
+				Toast.makeText(context, "รอผลตอบกลับนานเกินไป", Toast.LENGTH_SHORT).show();
+			} catch (HttpHostConnectException e) {
+				Toast.makeText(context, "เชื่อมต่อเซิร์ฟเวอร์ไม่ได้", Toast.LENGTH_SHORT).show();
+				e.printStackTrace();
+			} catch (IOException e) {
+				Toast.makeText(context, "มีปัญหาการเชื่อมต่อ", Toast.LENGTH_SHORT).show();
+				e.printStackTrace();
+			}
+			
+			return null;
+		}
+		
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+		}
+
+		@Override
+		protected void onPostExecute(Void message) {
+			selectDeviceActivity.refreshListView();
+			Toast.makeText(context, "ลบ " + bid + " สำเร็จ", Toast.LENGTH_SHORT).show();
+		}
 	}
 	
 	// ฟังก์ชั่นหรับค่าเวลาที่บันทึกไว้ เทียบว่าจากปัจจุบัน ผ่านไปแล้วนานเท่าไหร่

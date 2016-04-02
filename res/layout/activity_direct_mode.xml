@@ -50,8 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="8"
             android:ems="10"
-            android:maxLines="1"
-            android:inputType="textPassword" />
+            android:maxLines="1" />
     </LinearLayout>
 
     <LinearLayout
