@@ -7,7 +7,7 @@
     <uses-sdk
         android:minSdkVersion="15"
         android:targetSdkVersion="15" />
-    
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -35,6 +35,10 @@
         <activity
             android:name=".DirectModeActivity"
             android:label="@string/title_activity_direct_mode" >
+        </activity>
+        <activity
+            android:name=".SettingActivity"
+            android:label="@string/title_activity_setting" >
         </activity>
     </application>
 

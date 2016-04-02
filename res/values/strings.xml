@@ -7,5 +7,6 @@
     <string name="title_activity_select_device">SelectDeviceActivity</string>
     <string name="title_activity_console">ConsoleActivity</string>
     <string name="title_activity_direct_mode">DirectModeActivity</string>
+    <string name="title_activity_setting">SettingActivity</string>
 
 </resources>

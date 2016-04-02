@@ -86,4 +86,10 @@
         android:layout_height="wrap_content"
         android:text="ตรวจสอบสถานะ" />
 
+    <Button
+        android:id="@+id/buttonSetting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ตั้งค่าบอร์ด" />
+
 </LinearLayout>

@@ -33,6 +33,7 @@ public class ConsoleActivity extends Activity {
 	private ToggleButton toggleRelayFilter;
 	private Button buttonFeed;
 	private Button buttonRefresh;
+	private Button buttonSetting;
 	
 	// ประกาศตัวแปรที่จำเป็นต้องใช้
 	private OnCheckedChangeListener listener;
@@ -94,6 +95,16 @@ public class ConsoleActivity extends Activity {
 				else {
 					Toast.makeText(getApplicationContext(), "กรุณารอประมวลผล", Toast.LENGTH_SHORT).show();
 				}
+			}
+		});
+		
+		buttonSetting = (Button) findViewById(R.id.buttonSetting);
+		buttonSetting.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
+				startActivity(intent);
 			}
 		});
 		
@@ -264,7 +275,7 @@ public class ConsoleActivity extends Activity {
 		protected void onPostExecute(String result) {
 			loading.dismiss();
 
-			if (Integer.parseInt(result) > 0) {
+			if (result.equals("OK")) {
 				Toast.makeText(context, "ให้อาหารเรียบร้อย", Toast.LENGTH_SHORT).show();
 			} else {
 				Toast.makeText(context, "เกิดข้อผิดพลาด", Toast.LENGTH_SHORT).show();
