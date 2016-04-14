@@ -42,6 +42,14 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		startService(new Intent(getApplicationContext(), BootUpService.class));
+		
+		if (SharedValues.getStringPref(getApplicationContext(), SharedValues.KEY_USERNAME) != null) {
+			Intent intent = new Intent(getApplicationContext(), SelectDeviceActivity.class);
+			startActivity(intent);
+			finish();
+		}
+		
 		editTextUsername = (EditText) findViewById(R.id.editTextUsername);
 		String username = SharedValues.getStringPref(getApplicationContext(), SharedValues.KEY_USERNAME);
 		if (username != null)

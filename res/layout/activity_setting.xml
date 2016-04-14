@@ -155,11 +155,18 @@
                 android:ems="10"
                 android:inputType="number" />
 
+            <CheckBox
+                android:id="@+id/checkBoxReboot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="รีเซตบอร์ด" />
+
             <Button
                 android:id="@+id/buttonSet"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Set" />
+
         </LinearLayout>
     </ScrollView>
 

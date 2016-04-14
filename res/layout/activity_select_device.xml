@@ -10,11 +10,24 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.rmutsv.aquarium.SelectDeviceActivity" >
 
-    <Button
-        android:id="@+id/buttonAdd"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="เพิ่ม" />
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/buttonAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="เพิ่ม" />
+
+        <Button
+            android:id="@+id/buttonLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Logout" />
+
+    </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"

@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Switch;
@@ -30,6 +31,7 @@ public class SettingActivity extends Activity {
 	private EditText editTextBoardName;
 	private EditText editTextStaticIP;
 	private EditText editTextPort;
+	private CheckBox checkBoxReboot;
 	private Button buttonSet;
 	
 
@@ -53,6 +55,8 @@ public class SettingActivity extends Activity {
 		editTextBoardName = (EditText) findViewById(R.id.editTextBoardName);
 		editTextStaticIP = (EditText) findViewById(R.id.editTextStaticIP);
 		editTextPort = (EditText) findViewById(R.id.editTextPort);
+		
+		checkBoxReboot = (CheckBox) findViewById(R.id.checkBoxReboot);
 		
 		buttonSet = (Button) findViewById(R.id.buttonSet);
 		buttonSet.setOnClickListener(new OnClickListener() {
@@ -97,7 +101,8 @@ public class SettingActivity extends Activity {
 				param += editTextWifiPassword.getText().toString() + "~";
 				param += editTextBoardName.getText().toString() + "~";
 				param += editTextStaticIP.getText().toString() + "~";
-				param += editTextPort.getText().toString();
+				param += editTextPort.getText().toString() + "~";
+				param += (checkBoxReboot.isChecked() ? "1" : "0");
 				
 				return Service.sendHttpRequest(context, "E" + param, Service.SOCKET_TIMEOUT_TRYING);
 			}

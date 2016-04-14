@@ -116,8 +116,8 @@ public class ConsoleActivity extends Activity {
 	
 	private void refresh(String A) {
 		// เช็คค่า 4 หลักที่ได้จากเรียก relay=A ไปที่บอร์ด
-		boolean heaterAuto = A.charAt(0) == '1';
-		boolean filterAuto = A.charAt(1) == '1';
+		boolean heaterAuto = A.charAt(0) == '0';
+		boolean filterAuto = A.charAt(1) == '0';
 		boolean relay1 = A.charAt(2) == '0';
 		boolean relay2 = A.charAt(3) == '0';
 		
@@ -217,8 +217,8 @@ public class ConsoleActivity extends Activity {
 
 		@Override
 		protected String doInBackground(Void... params) {
-			String heaterAuto = switchRelayHeater.isChecked() ? "1" : "0";
-			String filterAuto = switchRelayFilter.isChecked() ? "1" : "0";
+			String heaterAuto = switchRelayHeater.isChecked() ? "0" : "1";
+			String filterAuto = switchRelayFilter.isChecked() ? "0" : "1";
 			String relay1 = !toggleRelayHeater.isChecked() ? "1" : "0";
 			String relay2 = !toggleRelayFilter.isChecked() ? "1" : "0";
 			

@@ -25,6 +25,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
 import android.content.Context;
+import android.util.Log;
 
 /**
  * เอาไว้เรียกข้อมูลจาก server ตอนนี้ยังไม่ได้ใช้
@@ -33,6 +34,10 @@ public class Request {
 	
 	private Request() {
 		
+	}
+	
+	public static String checkLost(Context context) throws IOException {
+		return request(String.format("SELECT * FROM ping WHERE bid IN (SELECT bid FROM registers WHERE username = '%s') AND date < NOW() - INTERVAL 5 MINUTE", SharedValues.getStringPref(context, SharedValues.KEY_USERNAME)));
 	}
 	
 	public static String checkUsername(Context context, String username, String password) throws IOException {
@@ -46,7 +51,7 @@ public class Request {
 	
 	public static void removeDevice(Context context, String bid) throws IOException {
 		String username = SharedValues.getStringPref(context, SharedValues.KEY_USERNAME);
-		request(String.format("REMOVE FROM register WHERE bid = '%s' AND username = '%s'", bid, username));
+		request(String.format("DELETE FROM registers WHERE bid = '%s' AND username = '%s'", bid, username));
 	}
 	
 	public static String getDevices(Context context) throws IOException {
@@ -55,6 +60,7 @@ public class Request {
 	}
 	
 	private static String request(String str) throws IOException {
+		Log.d("sql", str);
 		str = str.replace("'", "xxaxx").replace("(", "xxbxx").replace(")", "xxcxx").replace(">", "xxdxx");
 		try {
 			HttpParams httpParameters = new BasicHttpParams();

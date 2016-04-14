@@ -40,6 +40,15 @@
             android:name=".SettingActivity"
             android:label="@string/title_activity_setting" >
         </activity>
+        
+        <service android:name=".BootUpService" />
+        
+        <receiver android:name=".Receiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.TIME_TICK" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

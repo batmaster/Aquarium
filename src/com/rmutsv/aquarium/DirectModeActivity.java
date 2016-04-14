@@ -98,13 +98,6 @@ public class DirectModeActivity extends Activity {
 			else {
 				Toast.makeText(context, "เกิดข้อผิดพลาด", Toast.LENGTH_SHORT).show();
 			}
-			
-//			Intent intent = new Intent(getApplicationContext(), ConsoleActivity.class);
-////			String bid = result.substring(4, result.indexOf("-"));
-//			intent.putExtra(SharedValues.KEY_BID, "AAA");
-//			startActivity(intent);
-//			finish();
-			
 		}
 	}
 }

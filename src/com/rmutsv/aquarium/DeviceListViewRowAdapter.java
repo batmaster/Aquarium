@@ -91,6 +91,7 @@ public class DeviceListViewRowAdapter extends ArrayAdapter<DeviceListViewRowItem
 		
 		
 		public RemoveDevicesTask(Context context, String bid) {
+			this.context = context;
 			this.bid = bid;
 		}
 		
@@ -128,7 +129,7 @@ public class DeviceListViewRowAdapter extends ArrayAdapter<DeviceListViewRowItem
 	}
 	
 	// ฟังก์ชั่นหรับค่าเวลาที่บันทึกไว้ เทียบว่าจากปัจจุบัน ผ่านไปแล้วนานเท่าไหร่
-	private String getDateDiff(Date before, Date after) {
+	public String getDateDiff(Date before, Date after) {
 	    long diffInMillies = after.getTime() - before.getTime();
 	    Log.d("diff", after + "");
 	    Log.d("diff", before + "");

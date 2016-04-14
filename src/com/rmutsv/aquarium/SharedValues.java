@@ -51,4 +51,12 @@ public class SharedValues {
 		return sp.getString(key, null);
 	}
 	
+	public static void remove(Context context, String key) {
+		SharedPreferences sp = context.getSharedPreferences(SETTING_PREF, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sp.edit();
+		editor.remove(key);
+		editor.commit();
+	}
+	
+	
 }

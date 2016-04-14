@@ -37,6 +37,7 @@ import android.widget.Toast;
 public class SelectDeviceActivity extends Activity {
 	
 	private Button buttonAdd;
+	private Button buttonLogout;
 	private ListView listView;
 
 	@Override
@@ -78,18 +79,34 @@ public class SelectDeviceActivity extends Activity {
 			}
 		});
 		
+		buttonLogout = (Button) findViewById(R.id.buttonLogout);
+		buttonLogout.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				SharedValues.remove(getApplicationContext(), SharedValues.KEY_USERNAME);
+				Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+				startActivity(intent);
+				finish();
+			}
+		});
+		
 		listView = (ListView) findViewById(R.id.listView);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//				Intent intent = new Intent(getApplicationContext(), ConsoleActivity.class);
-//				ViewGroup row = (ViewGroup) listView.getChildAt(position);
-//				TextView textViewBid = (TextView) row.findViewById(R.id.textViewBid);
-//				intent.putExtra(SharedValues.KEY_BID, textViewBid.getText().toString());
-//				startActivity(intent);
+				ViewGroup row = (ViewGroup) listView.getChildAt(position);
+				TextView textViewIp = (TextView) row.findViewById(R.id.textViewIp);
+				TextView textViewPort = (TextView) row.findViewById(R.id.textViewPort);
 				
-				Toast.makeText(getApplicationContext(), "ยังไม่เปิดให้บริการ กรุณาเชื่อมต่อบอร์ดโดยตรง", Toast.LENGTH_SHORT).show();
+				SharedValues.setStringPref(getApplicationContext(), SharedValues.KEY_IP, textViewIp.getText().toString());
+//				SharedValues.setStringPref(getApplicationContext(), SharedValues.KEY_IP, "192.168.43.38");
+				SharedValues.setStringPref(getApplicationContext(), SharedValues.KEY_PORT, textViewPort.getText().toString());
+				
+				TryToConnectTask task = new TryToConnectTask(getApplicationContext());
+				task.execute();
+				
 			}
 		});
 	}
@@ -224,5 +241,49 @@ public class SelectDeviceActivity extends Activity {
 			outerDialog.dismiss();
 		}
 	}
+	
+	// คลาสสำหรับ แค่ตรวจสอบสถานะล่าสุดในบอร์ด
+		private class TryToConnectTask extends AsyncTask<Void, Void, String> {
+			
+			private Context context;
+			private ProgressDialog loading;
+			
+			public TryToConnectTask(Context context) {
+				this.context = context;
+				
+				loading = new ProgressDialog(SelectDeviceActivity.this);
+				loading.setTitle("ตรวจสอบการเชื่อมต่อ");
+				loading.setMessage("กำลังโหลด...");
+//				loading.setCancelable(false);
+				loading.setProgressStyle(ProgressDialog.STYLE_SPINNER); 
+			}
+
+			@Override
+			protected String doInBackground(Void... params) {
+				return Service.sendHttpRequest(context, "A", Service.SOCKET_TIMEOUT_TRYING);
+			}
+			
+			@Override
+			protected void onPreExecute() {
+				loading.show();
+				super.onPreExecute();
+			}
+			
+			@Override
+			protected void onPostExecute(String result) {
+				loading.dismiss();
+				
+				if (result.length() > 4) {
+					
+					Intent intent = new Intent(getApplicationContext(), ConsoleActivity.class);
+					intent.putExtra("A", result);
+					startActivity(intent);
+					finish();
+				}
+				else {
+					Toast.makeText(context, "เกิดข้อผิดพลาด", Toast.LENGTH_SHORT).show();
+				}
+			}
+		}
 	
 }
