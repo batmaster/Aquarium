@@ -79,7 +79,7 @@ public class Receiver extends BroadcastReceiver {
 						NotificationCompat.Builder mBuilder =
 							    new NotificationCompat.Builder(context)
 							    .setSmallIcon(R.drawable.ic_launcher)
-							    .setContentTitle("บอร์ดขาดการติดต่อจ้าบ")
+							    .setContentTitle("บอร์ดขาดการติดต่อ")
 							    .setContentText(bid  + " ตั้งแต่เวลา " + date);
 						
 						mNotifyMgr.notify((int) (new Date().getTime() % 65535), mBuilder.build());
