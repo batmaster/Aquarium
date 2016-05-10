@@ -83,11 +83,11 @@ public class DBHelper extends SQLiteOpenHelper {
 	    else {
 	    	SQLiteDatabase db2 = getWritableDatabase();
 			String sql2 = String.format("DELETE FROM bids WHERE bid = '%s'", bid);
-		    db.execSQL(sql2);
+			db2.execSQL(sql2);
 		    
 		    SQLiteDatabase db3 = getWritableDatabase();
 			String sql3 = String.format("INSERT INTO bids (bid, date) VALUES ('%s', '%s')", bid, date);
-		    db.execSQL(sql3);
+			db3.execSQL(sql3);
 	    }
 	    
 	    return true;
