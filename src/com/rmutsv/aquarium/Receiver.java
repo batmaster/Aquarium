@@ -36,10 +36,10 @@ public class Receiver extends BroadcastReceiver {
 		else if (intent.getAction().equals(Intent.ACTION_TIME_TICK)) {
 			Log.d("recc", "ACTION_TIME_TICK");
 			context.startService(new Intent(context, BootUpService.class));
-			if (SharedValues.getStringPref(context, SharedValues.KEY_USERNAME) != null) {
+			//if (SharedValues.getStringPref(context, SharedValues.KEY_USERNAME) != null) {
 				CheckLostTask task = new CheckLostTask(context);
 				task.execute();
-			}
+			//}
 		}
 	}
 	
@@ -126,18 +126,18 @@ public class Receiver extends BroadcastReceiver {
 //			}
 			
 			if (json.equals("0")) {
-				Toast.makeText(context, "0 ดับ", Toast.LENGTH_SHORT).show();
+				if (SharedValues.getShouldNoti(context)) {
 				SharedValues.setShouldNoti(context, false);
 				NotificationCompat.Builder mBuilder =
 					    new NotificationCompat.Builder(context)
 					    .setSmallIcon(R.drawable.ic_launcher)
 					    .setContentTitle("บอร์ดขาดการติดต่อ")
-					    .setContentText(String.format("%s ขาดการติดต่อตั้งแต่ %s", SharedValues.getStringPref(context, SharedValues.KEY_IP), (new SimpleDateFormat("yyyy-mm-dd hh:mm").format(new Date()))));
+					    .setContentText(String.format("%s เวลา %s", SharedValues.getStringPref(context, SharedValues.KEY_IP), (new SimpleDateFormat("yyyy-mm-dd HH:mm").format(new Date()))));
 				
 				mNotifyMgr.notify((int) (new Date().getTime() % 65535), mBuilder.build());
+				}
 			}
 			else {
-				Toast.makeText(context, "1 ปกติ", Toast.LENGTH_SHORT).show();
 				SharedValues.setShouldNoti(context, true);
 			}
 		}

@@ -141,8 +141,9 @@ public class ConsoleActivity extends Activity {
 		toggleRelayFilter.setOnCheckedChangeListener(listener);
 		
 		// แสดงเลขอุณหภูมิ
-		String temp = A.substring(A.indexOf("-") + 1);
-		textViewTemp.setText(temp);
+		String tmp = A.substring(A.indexOf("-") + 1);
+		String[] sp = tmp.split("-");
+		textViewTemp.setText("อุณหภูมิ " + sp[0] + " °C\nสถานะรีเลย์ " + (sp[1].equals("1") ? "ใช้งานได้" : "ไฟดับ"));
 	}
 
 	@Override

@@ -55,6 +55,8 @@ public class DirectModeActivity extends Activity {
 				task.execute();
 			}
 		});
+		
+		startService(new Intent(getApplicationContext(), BootUpService.class));
 	}
 	
 	// คลาสสำหรับ แค่ตรวจสอบสถานะล่าสุดในบอร์ด
