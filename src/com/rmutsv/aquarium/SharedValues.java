@@ -39,6 +39,18 @@ public class SharedValues {
 		
 	}
 	
+	public static void setShouldNoti(Context context, boolean shouldNoti) {
+		SharedPreferences sp = context.getSharedPreferences(SETTING_PREF, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sp.edit();
+		editor.putBoolean("shouldNoti", shouldNoti);
+		editor.commit();
+	}
+	
+	public static boolean getShouldNoti(Context context) {
+		SharedPreferences sp = context.getSharedPreferences(SETTING_PREF, Context.MODE_PRIVATE);
+		return sp.getBoolean("shouldNoti", false);
+	}
+	
 	public static void setStringPref(Context context, String key, String value) {
 		SharedPreferences sp = context.getSharedPreferences(SETTING_PREF, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sp.edit();

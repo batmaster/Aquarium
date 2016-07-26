@@ -90,12 +90,16 @@ public class DirectModeActivity extends Activity {
 			
 			if (result.length() > 4) {
 				
+				SharedValues.setShouldNoti(getApplicationContext(), true);
+				
 				Intent intent = new Intent(getApplicationContext(), ConsoleActivity.class);
 				intent.putExtra("A", result);
 				startActivity(intent);
 				finish();
 			}
 			else {
+				SharedValues.setShouldNoti(getApplicationContext(), false);
+				
 				Toast.makeText(context, "เกิดข้อผิดพลาด", Toast.LENGTH_SHORT).show();
 			}
 		}
