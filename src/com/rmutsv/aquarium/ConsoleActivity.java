@@ -143,7 +143,7 @@ public class ConsoleActivity extends Activity {
 		// แสดงเลขอุณหภูมิ
 		String tmp = A.substring(A.indexOf("-") + 1);
 		String[] sp = tmp.split("-");
-		textViewTemp.setText("อุณหภูมิ " + sp[0] + " °C\nสถานะรีเลย์ " + (sp[1].equals("1") ? "ใช้งานได้" : "ไฟดับ"));
+		textViewTemp.setText("อุณหภูมิ : " + sp[0] + " °C\nสถานะ : " + (sp[1].equals("1") ? "ปกติ" : "ไฟดับ"));
 	}
 
 	@Override
